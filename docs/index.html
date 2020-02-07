@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<head>
+  <title>罩罩地圖</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <style>
+    .map {
+      height: calc(100vh - 25px);
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .title {
+      height: 5vh
+    }
+  </style>
+</head>
+<html>
+
+<body>
+  <div>
+    僅顯示下列有資料的販賣點：
+    <input type="checkbox" onclick="adultClick()" checked>成人
+    <input type="checkbox" onclick="childClick()" checked>兒童
+    <input type="checkbox" onclick="noneClick()">口罩已售完
+  </div>
+  <div class="map"></div>
+
+  <script>
+    window.alert("請注意：有些販賣點會發放號碼牌，發放數量並不會上傳至主機，因此會造成資料上之落差。\n資料來源：衛生福利部中央健康保險署")
+    var map;
+    var adult = true
+    var child = true
+    var none = true
+    var lastInfoWindow
+    var markers = {}
+    const apiUrl = 'https://demogameserver.ddns.net/mask'
+
+    function adultClick() {
+      adult = !adult
+      CheckMarker()
+    }
+
+    function childClick() {
+      child = !child
+      CheckMarker()
+    }
+
+    function noneClick() {
+      none = !none
+      CheckMarker()
+    }
+
+    function CheckMarker() {
+      for (var key in markers) {
+        let value = markers[key];
+        if (value.marker) value.marker.setMap(null)
+        value.marker = null
+        if ((none && value.data.child + value.data.adult === 0) || (child && value.data.child > 0) || (adult && value.data.adult > 0)) {
+          addMarker(value.data)
+        }
+      }
+    }
+
+    function addMarker(data) {
+      let marker = new google.maps.Marker({
+        position: data,
+        map: map
+      });
+      markers[data.mId].marker = marker
+      time = data.time.replace("T", " ").replace("+08:00", "")
+      const contentString = `${data.name}<br>${data.address}<br>${data.tel}<br>成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}`
+      var infowindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+      marker.addListener('click', function (e) {
+        if (lastInfoWindow) {
+          lastInfoWindow.close();
+        }
+        infowindow.open(map, marker);
+        lastInfoWindow = infowindow;
+      });
+    }
+
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          moveMap(position.coords.latitude, position.coords.longitude)
+        }, () => { moveMap(25.033782, 121.564280) });
+      } else {
+        moveMap(25.033782, 121.564280);
+      }
+
+      function moveMap(lat, lng) {
+        map = new google.maps.Map(document.getElementsByClassName('map')[0], {
+          center: {
+            lat: lat,
+            lng: lng
+          },
+          zoom: 15
+        });
+        map.addListener('dragend', function () {
+          getMaskData(map.getCenter().lat(), map.getCenter().lng())
+        })
+        getMaskData(lat, lng)
+      }
+
+      function getMaskData(lat, lng) {
+        url = `${apiUrl}?lat=${lat}&lng=${lng}`;
+        fetch(url)
+          .then((response) => {
+            return response.json()
+          })
+          .then(response => {
+            for (var i = 0; i < response.length; i++) {
+              data = response[i]
+              if (markers[data.mId]) {
+                markers[data.mId].data = data
+                continue
+              }
+              markers[data.mId] = { data }
+            }
+            CheckMarker()
+          })
+          .catch(console.log)
+      }
+    }
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHIDcFoHO0_UrMWx3t6mPbkapVZLlPjqk&callback=initMap"
+    async defer></script>
+
+</body>
+
+</html>
