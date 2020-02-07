@@ -10,6 +10,7 @@
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
     crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
   <style>
     #mapid {
       height: 94vh;
@@ -52,6 +53,7 @@
     const mapLevel = 16;
     var markers = {};
     const apiUrl = 'https://demogameserver.ddns.net/mask';
+    // const apiUrl = 'http://127.0.0.1:5500';
 
     function adultClick() {
       adult = !adult
@@ -98,14 +100,16 @@
 
     function addMarker(data) {
       var contentString = `<b>${data.name}</b><br>${data.address}<br><a href="tel:${data.tel}">${data.tel}</a></br><br>口罩剩餘數量<br>`;
-      if (data.time ===  "") {
+      if (data.time === "") {
         contentString += "無資料"
       } else {
-      var time = data.time.replace("T", " ").replace("+08:00", "").replace("Z", "");
-      contentString += `成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}</br><br>號碼牌資訊<br>`
+        // var time = data.time.replace("T", " ").replace("+08:00", "").replace("Z", "");
+        time = moment(data.time).format('YYYY-MM-DD HH:mm:ss');
+        contentString += `成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}</br><br>號碼牌資訊<br>`
+      }
       var status = "無資料"
       if (data.cardUpdateTime != "" && data.cardStatus > 0) {
-        time = data.time.replace("T", " ").replace("+08:00", "").replace("Z", "");
+        time = data.cardUpdateTime.replace("T", " ").replace("+08:00", "").replace("Z", "");
         if (data.cardStatus === 1) {
           status = time + " 不需號碼牌";
         } else if (data.cardStatus === 2) {
@@ -113,10 +117,9 @@
         } else {
           status = time + " 號碼牌已發完";
         }
+        contentString += status
       }
-      contentString += status
       contentString = contentString + `</br><br>我要回報<br><a onclick="cardStatusClick(${data.mId}, 1)">不需號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 2)">還有號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 3)">號碼牌已發完</a>`
-      }
       var marker = L.marker([data.lat, data.lng]).addTo(map).bindPopup(contentString);
       markers[data.mId].marker = marker
     }
