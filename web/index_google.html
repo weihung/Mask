@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <style>
     .map {
-      height: calc(100vh - 25px);
+      height: 94vh;
     }
 
     html,
@@ -17,18 +17,22 @@
     }
 
     .title {
-      height: 5vh
+      height: 6vh;
+      display: flex;
+      align-items: center;
     }
   </style>
 </head>
 <html>
 
 <body>
-  <div>
-    僅顯示下列有資料的販賣點：
-    <input type="checkbox" onclick="adultClick()" checked>成人
-    <input type="checkbox" onclick="childClick()" checked>兒童
-    <input type="checkbox" onclick="noneClick()">口罩已售完
+  <div class="title">
+    <div>
+      僅顯示下列有資料的販賣點：
+      <input type="checkbox" onclick="adultClick()" checked>成人
+      <input type="checkbox" onclick="childClick()" checked>兒童
+      <input type="checkbox" onclick="noneClick()">口罩已售完
+    </div>
   </div>
   <div class="map"></div>
 
