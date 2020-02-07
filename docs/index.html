@@ -53,7 +53,6 @@
     const mapLevel = 16;
     var markers = {};
     const apiUrl = 'https://demogameserver.ddns.net/mask';
-    // const apiUrl = 'http://127.0.0.1:5500';
 
     function adultClick() {
       adult = !adult
@@ -101,13 +100,13 @@
     function addMarker(data) {
       var contentString = `<b>${data.name}</b><br>${data.address}<br><a href="tel:${data.tel}">${data.tel}</a></br><br>口罩剩餘數量<br>`;
       if (data.time === "") {
-        contentString += "無資料"
+        contentString += "無資料</br>";
       } else {
-        // var time = data.time.replace("T", " ").replace("+08:00", "").replace("Z", "");
         time = moment(data.time).format('YYYY-MM-DD HH:mm:ss');
-        contentString += `成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}</br><br>號碼牌資訊<br>`
+        contentString += `成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}</br>`;
       }
-      var status = "無資料"
+      contentString += "<br>號碼牌資訊<br>";
+      var status = "無資料";
       if (data.cardUpdateTime != "" && data.cardStatus > 0) {
         time = data.cardUpdateTime.replace("T", " ").replace("+08:00", "").replace("Z", "");
         if (data.cardStatus === 1) {
@@ -117,9 +116,8 @@
         } else {
           status = time + " 號碼牌已發完";
         }
-        contentString += status
       }
-      contentString = contentString + `</br><br>我要回報<br><a onclick="cardStatusClick(${data.mId}, 1)">不需號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 2)">還有號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 3)">號碼牌已發完</a>`
+      contentString += status + `</br><br>我要回報<br><a onclick="cardStatusClick(${data.mId}, 1)">不需號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 2)">還有號碼牌</a>  <a onclick="cardStatusClick(${data.mId}, 3)">號碼牌已發完</a>`
       var marker = L.marker([data.lat, data.lng]).addTo(map).bindPopup(contentString);
       markers[data.mId].marker = marker
     }
