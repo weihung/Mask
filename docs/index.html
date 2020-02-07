@@ -74,8 +74,8 @@
         map: map
       });
       markers[data.mId].marker = marker
-      time = data.time.replace("T", " ").replace("+08:00", "")
-      const contentString = `${data.name}<br>${data.address}<br>${data.tel}<br>成人:${data.adult}<br>兒童:${data.child}<br>更新時間：${time}`
+      time = data.time.replace("T", " ").replace("+08:00", "").replace("Z", "");
+      const contentString = `<b>${data.name}</b><br>${data.address}<br><a href="tel:${data.tel}">${data.tel}</a></br><br>口罩剩餘數量<br>成人:${data.adult}<br>兒童:${data.child}</br><br>更新時間：${time}</br>`
       var infowindow = new google.maps.InfoWindow({
         content: contentString
       });
