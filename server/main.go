@@ -77,7 +77,7 @@ func ResponseWithJson(w http.ResponseWriter, code int, payload interface{}) {
 // GetData: 從 SQL 取回資料
 func GetData(lat, lng string) []Result {
 	var rs []Result
-	SqlDb.Table("stores").Select("lefts.m_id, stores.name, stores.tel, stores.address, stores.lat, stores.lng, lefts.adult, lefts.child, lefts.update_time").Joins("RIGHT JOIN lefts ON lefts.m_id = stores.m_id").Where("DISTANCE(lat, lng, ?, ?, 'KM' ) < 1", lat, lng).Find(&rs)
+	SqlDb.Table("stores").Select("stores.m_id, stores.name, stores.tel, stores.address, stores.lat, stores.lng, lefts.adult, lefts.child, lefts.update_time").Joins("LEFT JOIN lefts ON lefts.m_id = stores.m_id").Where("DISTANCE(lat, lng, ?, ?, 'KM' ) < 1", lat, lng).Find(&rs)
 	return rs
 }
 
