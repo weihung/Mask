@@ -38,7 +38,7 @@
       僅顯示下列有資料的販賣點：
       <input type="checkbox" onclick="adultClick()" checked>成人
       <input type="checkbox" onclick="childClick()" checked>兒童
-      <input type="checkbox" onclick="noneClick()">口罩已售完
+      <input type="checkbox" onclick="noneClick()" checked>口罩已售完
     </div>
   </div>
   <div id="mapid"></div>
@@ -49,7 +49,7 @@
     var map;
     var adult = true;
     var child = true;
-    var none = false;
+    var none = true;
     const mapLevel = 16;
     var markers = {};
     const apiUrl = 'https://demogameserver.ddns.net/mask';
