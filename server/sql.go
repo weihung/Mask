@@ -19,6 +19,7 @@ func init() {
 	SqlDb = db
 	db.AutoMigrate(&Left{})
 	db.AutoMigrate(&Store{})
+	db.AutoMigrate(&CardStatus{})
 	log.Println("SQL server auto migrate completed")
 }
 
